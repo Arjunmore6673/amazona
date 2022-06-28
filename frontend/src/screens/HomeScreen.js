@@ -1,6 +1,8 @@
 import axios from 'axios';
 import { useEffect, useReducer } from 'react';
+import { Col, Row } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import Product from '../components/Product';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -46,26 +48,15 @@ const HomeScreen = () => {
         {loading ? (
           <div>Loading...</div>
         ) : (
-          products?.map((x) => {
-            return (
-              <div key={x.slug} className="product">
-                <Link to={`/product/${x.slug}`}>
-                  <img src={x.image} alt={x.name} />
-                </Link>
-
-                <div className="product-info">
-                  <Link to={`/product/${x.slug}`}>
-                    <p>{x.name}</p>
-                  </Link>
-
-                  <p>
-                    <strong>{x.price}</strong>
-                  </p>
-                  <button>add to cart</button>
-                </div>
-              </div>
-            );
-          })
+          <Row>
+            {products?.map((x) => {
+              return (
+                <Col key={x.slug} sm={4} md={4} lg={3} className="mb-3">
+                  <Product product={x} />
+                </Col>
+              );
+            })}
+          </Row>
         )}
       </div>
     </div>
