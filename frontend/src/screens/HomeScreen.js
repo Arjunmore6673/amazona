@@ -3,6 +3,7 @@ import { useEffect, useReducer } from 'react';
 import { Col, Row } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import Product from '../components/Product';
+import { Helmet } from 'react-helmet-async';
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -42,6 +43,9 @@ const HomeScreen = () => {
 
   return (
     <div>
+      <Helmet>
+        <title>amazona</title>
+      </Helmet>
       <h1>Featured Products</h1>
       <div className="products">
         {error && <div>{error}</div>}
