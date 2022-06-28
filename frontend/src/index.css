@@ -6,7 +6,10 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
+.container {
+  margin: auto;
+  max-width: 1400px;
+}
 header {
   background-color: #404040;
   padding: 1rem;
@@ -17,4 +20,25 @@ header a {
   color: #fff;
   font-weight: bold;
   text-decoration: none;
+}
+
+main {
+  padding: 1rem;
+}
+
+.products {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.product {
+  border: 1px solid #404040;
+  margin: 1rem;
+}
+.product img {
+  max-width: 200px;
+  width: 100%;
+}
+.product-info {
+  padding: 1rem;
 }
