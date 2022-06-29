@@ -4,7 +4,9 @@ export const Store = createContext();
 
 const initialState = {
   cart: {
-    cartItems: [],
+    cartItems: localStorage.getItem('cartItems')
+      ? JSON.parse(localStorage.getItem('cartItems'))
+      : [],
   },
 };
 
@@ -21,6 +23,7 @@ const reducer = (state, action) => {
       } else {
         cartItems.push({ ...action.payload, quantity: 1 });
       }
+      localStorage.setItem('cartItems', JSON.stringify(cartItems));
 
       return {
         ...state,
@@ -30,6 +33,48 @@ const reducer = (state, action) => {
         },
       };
     }
+    case 'ADD_QUANTITY': {
+      let cartItems = state.cart.cartItems?.map((x) =>
+        x._id === action.payload
+          ? {
+              ...x,
+              quantity: x.quantity + 1,
+            }
+          : x
+      );
+
+      localStorage.setItem('cartItems', JSON.stringify(cartItems));
+      return {
+        ...state,
+        cart: {
+          ...state.cart,
+          cartItems: cartItems,
+        },
+      };
+    }
+    case 'DELETE_QUANTITY':
+      let cartItems = state.cart.cartItems?.filter(
+        (x) => x._id !== action.payload
+      );
+
+      localStorage.setItem('cartItems', JSON.stringify(cartItems));
+      return {
+        ...state,
+        cart: {
+          ...state.cart,
+          cartItems: cartItems,
+        },
+      };
+    case 'DELETE_CART_ITEM':
+      return {
+        ...state,
+        cart: {
+          ...state.cart,
+          cartItems: state.cart.cartItems?.filter(
+            (x) => x._id !== action.payload
+          ),
+        },
+      };
     default:
       return state;
   }

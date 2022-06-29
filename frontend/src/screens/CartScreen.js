@@ -3,26 +3,16 @@ import { useContext, useEffect } from 'react';
 import { Button, Card, Col, ListGroup, Row } from 'react-bootstrap';
 import { Store } from '../Store';
 import { getError } from '../utls';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const CartScreen = () => {
+  const navigate = useNavigate();
   const { state, dispatch: ctxDispatch } = useContext(Store);
-  const { cart } = state;
-  const fetchData = async () => {
-    try {
-      ctxDispatch({ type: 'FETCH_REQUEST' });
-      const result = await axios.get(`/api/products`);
-      console.log(result, 'result');
-      ctxDispatch({ type: 'FETCH_SUCCESS', payload: result.data });
-    } catch (e) {
-      console.log(e);
-      ctxDispatch({ type: 'FETCH_FAIL', payload: getError(e) });
-    }
-  };
+  const {
+    cart: { cartItems },
+  } = state;
 
   useEffect(() => {}, []);
-
-  const { cartItems } = cart || {};
 
   const total = cartItems.reduce((prev, next) => {
     return prev + next.price * next.quantity;
@@ -30,6 +20,24 @@ const CartScreen = () => {
   const quantity = cartItems.reduce((prev, next) => {
     return prev + next.quantity;
   }, 0);
+
+  const updateQuantity = async (item, type) => {
+    const quantity = item ? item?.quantity + 1 : 1;
+    const { data } = await axios.get(`/api/products/${item._id}`);
+    if (data?.countInStock < quantity) {
+      window.alert('Sorry, Product is out of stock');
+      return;
+    }
+    ctxDispatch({ type: type, payload: item._id });
+  };
+
+  const deleteCartItem = async (item, type) => {
+    ctxDispatch({ type: 'DELETE_CART_ITEM', payload: item._id });
+  };
+
+  const checkoutHandler = async () => {
+    navigate('/signin?redirect=/shipping');
+  };
 
   return (
     <div>
@@ -51,16 +59,23 @@ const CartScreen = () => {
                     <Link to={`/product/${x.slug}`}>{x.name}</Link>
                   </Col>
                   <Col>
-                    <Button variant="light" disabled={x.quantity === 1}>
+                    <Button
+                      onClick={() => updateQuantity(x, 'DELETE_QUANTITY')}
+                      variant="light"
+                      disabled={x.quantity === 1}
+                    >
                       <i className="fas fa-minus-circle"></i>
                     </Button>
                     <span>{x.quantity}</span>
-                    <Button variant="light" disabled={x.quantity === 1}>
+                    <Button
+                      onClick={() => updateQuantity(x, 'ADD_QUANTITY')}
+                      variant="light"
+                    >
                       <i className="fas fa-plus-circle"></i>
                     </Button>
                   </Col>
                   <Col>
-                    <Button variant="primary">
+                    <Button onClick={() => deleteCartItem(x)} variant="primary">
                       <i className="fas fa-trash"></i>
                     </Button>
                   </Col>
@@ -83,6 +98,7 @@ const CartScreen = () => {
                   <Button
                     type="button"
                     variant="primary"
+                    onClick={checkoutHandler}
                     disabled={cartItems.length === 0}
                   >
                     Proceed to checkout
