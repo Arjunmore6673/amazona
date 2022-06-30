@@ -2,6 +2,8 @@ import express from 'express';
 import data from './data.js';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
+import seedRouter from './routes/seedRoutes.js';
+import productRouter from './routes/productRoutes.js';
 
 const app = express();
 dotenv.config();
@@ -15,21 +17,8 @@ mongoose
     console.log('error');
   });
 
-app.get('/api/products', (req, res) => {
-  res.send(data.products);
-});
-
-app.get('/api/products/slug/:slug', (req, res) => {
-  const product = data.products.find((x) => x.slug == req.params.slug);
-  if (product) res.send(product);
-  else res.status(404).send({ message: 'Product not found' });
-});
-
-app.get('/api/products/:id', (req, res) => {
-  const product = data.products.find((x) => x._id == req.params.id);
-  if (product) res.send(product);
-  else res.status(404).send({ message: 'Product not found' });
-});
+app.use('/api/seed', seedRouter);
+app.use('/api/products', productRouter);
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => console.log('server ready http://localhost:' + PORT));
