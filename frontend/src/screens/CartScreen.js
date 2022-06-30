@@ -10,6 +10,7 @@ const CartScreen = () => {
   const { state, dispatch: ctxDispatch } = useContext(Store);
   const {
     cart: { cartItems },
+    user,
   } = state;
 
   useEffect(() => {}, []);
@@ -36,7 +37,14 @@ const CartScreen = () => {
   };
 
   const checkoutHandler = async () => {
-    navigate('/signin?redirect=/shipping');
+    console.log('checkoutHandler', user);
+    if (Object.keys(user).length > 0) {
+      console.log('inside user');
+      navigate('/shipping');
+    } else {
+      console.log('else user');
+      navigate('/signin?redirect=/shipping');
+    }
   };
 
   return (
