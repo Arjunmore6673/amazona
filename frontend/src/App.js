@@ -1,7 +1,14 @@
 import { BrowserRouter, Link, Route, Routes } from 'react-router-dom';
 import HomeScreen from './screens/HomeScreen';
 import ProductScreen from './screens/ProductScreen';
-import { Badge, CarouselItem, Container, Nav, Navbar } from 'react-bootstrap';
+import {
+  Badge,
+  CarouselItem,
+  Container,
+  Nav,
+  Navbar,
+  NavDropdown,
+} from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import { Store } from './Store';
 import { useContext } from 'react';
@@ -9,9 +16,10 @@ import CartScreen from './screens/CartScreen';
 import SignInScreen from './screens/SignInScreen';
 
 function App() {
-  const { state } = useContext(Store);
+  const { state, dispatch: ctxDispatch } = useContext(Store);
+  const { cart, user } = state;
 
-  const { cart } = state;
+  console.log(user, 'user');
 
   const quantity = cart.cartItems?.reduce(
     (prev, current) => {
@@ -20,6 +28,10 @@ function App() {
     },
     [0]
   );
+
+  const signOutHandler = async () => {
+    ctxDispatch({ type: 'USER_SIGN_OUT' });
+  };
 
   return (
     <BrowserRouter>
@@ -36,6 +48,28 @@ function App() {
                   Cart
                   {cart.cartItems?.length > 0 && <Badge>{quantity}</Badge>}
                 </Link>
+                {Object.keys(user)?.length ? (
+                  <NavDropdown title={user.name} id="basic-nav-dropdown">
+                    <LinkContainer to="/profile">
+                      <NavDropdown.Item>User Profile</NavDropdown.Item>
+                    </LinkContainer>
+                    <LinkContainer to="/orderhistory">
+                      <NavDropdown.Item>Order History</NavDropdown.Item>
+                    </LinkContainer>
+                    <NavDropdown.Divider />
+                    <Link
+                      to="#"
+                      onClick={signOutHandler}
+                      className="dropdown-item"
+                    >
+                      Sign out
+                    </Link>
+                  </NavDropdown>
+                ) : (
+                  <Link to={'/signin'} className="nav-link">
+                    Sign in
+                  </Link>
+                )}
               </Nav>
             </Container>
           </Navbar>

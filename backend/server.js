@@ -4,9 +4,12 @@ import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import seedRouter from './routes/seedRoutes.js';
 import productRouter from './routes/productRoutes.js';
+import userRouter from './routes/userRoutes.js';
+dotenv.config();
 
 const app = express();
-dotenv.config();
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 mongoose
   .connect(process.env.MONGODB_URI)
@@ -19,6 +22,11 @@ mongoose
 
 app.use('/api/seed', seedRouter);
 app.use('/api/products', productRouter);
+app.use('/api/users', userRouter);
+
+app.use((err, req, res, next) => {
+  res.status(500).send({ msg: err.message });
+});
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => console.log('server ready http://localhost:' + PORT));

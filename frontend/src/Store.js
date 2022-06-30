@@ -3,6 +3,9 @@ import { createContext, useReducer } from 'react';
 export const Store = createContext();
 
 const initialState = {
+  user: localStorage.getItem('user')
+    ? JSON.parse(localStorage.getItem('user'))
+    : {},
   cart: {
     cartItems: localStorage.getItem('cartItems')
       ? JSON.parse(localStorage.getItem('cartItems'))
@@ -56,8 +59,7 @@ const reducer = (state, action) => {
       let cartItems = state.cart.cartItems?.filter(
         (x) => x._id !== action.payload
       );
-
-      localStorage.setItem('cartItems', JSON.stringify(cartItems));
+      console.log(cartItems, 'cartItems');
       return {
         ...state,
         cart: {
@@ -65,16 +67,33 @@ const reducer = (state, action) => {
           cartItems: cartItems,
         },
       };
-    case 'DELETE_CART_ITEM':
+    case 'DELETE_CART_ITEM': {
+      let cartItems = state.cart.cartItems?.filter(
+        (x) => x._id !== action.payload
+      );
+      localStorage.setItem('cartItems', JSON.stringify(cartItems || []));
       return {
         ...state,
         cart: {
           ...state.cart,
-          cartItems: state.cart.cartItems?.filter(
-            (x) => x._id !== action.payload
-          ),
+          cartItems: cartItems,
         },
       };
+    }
+    case 'USER_LOGIN': {
+      localStorage.setItem('user', JSON.stringify(action.payload));
+      return {
+        ...state,
+        user: action.payload,
+      };
+    }
+    case 'USER_SIGN_OUT': {
+      localStorage.removeItem('user');
+      return {
+        ...state,
+        user: {},
+      };
+    }
     default:
       return state;
   }

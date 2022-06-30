@@ -31,7 +31,7 @@ const CartScreen = () => {
     ctxDispatch({ type: type, payload: item._id });
   };
 
-  const deleteCartItem = async (item, type) => {
+  const deleteCartItem = async (item) => {
     ctxDispatch({ type: 'DELETE_CART_ITEM', payload: item._id });
   };
 
@@ -46,7 +46,7 @@ const CartScreen = () => {
         <Col lg={8} md={8}>
           {cartItems?.map((x) => {
             return (
-              <ListGroup.Item>
+              <ListGroup.Item key={x._id}>
                 <Row className="align-items-center">
                   <Col>
                     <img
