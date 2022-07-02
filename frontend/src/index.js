@@ -6,13 +6,16 @@ import App from './App';
 import { HelmetProvider } from 'react-helmet-async';
 import reportWebVitals from './reportWebVitals';
 import { StoreProvider } from './Store';
+import { PayPalScriptProvider } from '@paypal/react-paypal-js';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   // <React.StrictMod
   <StoreProvider>
     <HelmetProvider>
-      <App />
+      <PayPalScriptProvider deferLoading={true}>
+        <App />
+      </PayPalScriptProvider>
     </HelmetProvider>
   </StoreProvider>
   // </React.StrictMode>

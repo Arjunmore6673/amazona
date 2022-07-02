@@ -3,6 +3,7 @@ import React, { useContext, useEffect, useReducer } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate, useParams } from 'react-router-dom';
 import Row from 'react-bootstrap/Row';
+import { PayPalButtons, usePayPalScriptReducer } from '@paypal/react-paypal-js';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import ListGroup from 'react-bootstrap/ListGroup';
@@ -63,7 +64,6 @@ export default function OrderScreen() {
       loadingPay,
       loadingDeliver,
       successDeliver,
-      isPending,
     },
     dispatch,
   ] = useReducer(reducer, {
@@ -72,8 +72,8 @@ export default function OrderScreen() {
     error: '',
     successPay: false,
     loadingPay: false,
-    isPending: false,
   });
+  const [{ isPending }, paypalDispatch] = usePayPalScriptReducer();
 
   function createOrder(data, actions) {
     return actions.order
@@ -143,8 +143,30 @@ export default function OrderScreen() {
         dispatch({ type: 'DELIVER_RESET' });
       }
     } else {
+      const loadPaypalScript = async () => {
+        const { data: clientId } = await axios.get('/api/keys/paypal', {
+          headers: { authorization: `Bearer ${user.token}` },
+        });
+        paypalDispatch({
+          type: 'resetOptions',
+          value: {
+            'client-id': clientId,
+            currency: 'USD',
+          },
+        });
+        paypalDispatch({ type: 'setLoadingStatus', value: 'pending' });
+      };
+      loadPaypalScript();
     }
-  }, [order, user, orderId, navigate, successPay, successDeliver]);
+  }, [
+    order,
+    user,
+    orderId,
+    navigate,
+    successPay,
+    successDeliver,
+    paypalDispatch,
+  ]);
 
   async function deliverOrderHandler() {
     try {
@@ -285,11 +307,11 @@ export default function OrderScreen() {
                       <LoadingBox />
                     ) : (
                       <div>
-                        {/* <PayPalButtons
+                        <PayPalButtons
                           createOrder={createOrder}
                           onApprove={onApprove}
                           onError={onError}
-                        ></PayPalButtons> */}
+                        ></PayPalButtons>
                       </div>
                     )}
                     {loadingPay && <LoadingBox></LoadingBox>}

@@ -44,9 +44,31 @@ orderRouter.get(
     if (order) {
       res.status(200).send(order);
     } else {
-      res.status(404).send({ message: 'new order created', order });
+      res.status(404).send({ message: 'order not found' });
     }
   })
 );
 
+orderRouter.put(
+  '/:id/pay',
+  isAuth,
+  expressAsyncHandler(async (req, res) => {
+    const order = await Order.findById(req.params.id);
+    if (order) {
+      order.isPaid = true;
+      order.paidAt = Date.now();
+      order.paymentResult = {
+        id: req.body.id,
+        status: req.body.status,
+        update_ime: req.body.update_time,
+        email_address: req.body.email_address,
+      };
+
+      const updatedOrder = await order.save();
+      res.send({ message: 'order paid', order: updatedOrder });
+    } else {
+      res.status(404).send({ message: 'order not found' });
+    }
+  })
+);
 export default orderRouter;
