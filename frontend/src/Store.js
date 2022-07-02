@@ -86,6 +86,15 @@ const reducer = (state, action) => {
         },
       };
     }
+    case 'CART_CLEAR': {
+      return {
+        ...state,
+        cart: {
+          ...state.cart,
+          cartItems: [],
+        },
+      };
+    }
     case 'USER_LOGIN': {
       localStorage.setItem('user', JSON.stringify(action.payload));
       return {

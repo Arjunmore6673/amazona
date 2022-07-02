@@ -64,10 +64,10 @@ export default function PlaceOrderScreen() {
           orderItems: cartItems,
           shippingAddress: shippingAddress,
           paymentMethod: paymentMethod,
-          itemsPrice: state.cart.itemsPrice,
-          shippingPrice: state.cart.shippingPrice,
-          taxPrice: state.cart.taxPrice,
-          totalPrice: state.cart.totalPrice,
+          itemsPrice: itemsPrice,
+          shippingPrice: shippingPrice,
+          taxPrice: taxPrice,
+          totalPrice: totalPrice,
         },
         {
           headers: {
@@ -75,7 +75,7 @@ export default function PlaceOrderScreen() {
           },
         }
       );
-      dispatch({ type: 'CART_CLEAR' });
+      ctxDispatch({ type: 'CART_CLEAR' });
       dispatch({ type: 'CREATE_SUCCESS' });
       localStorage.removeItem('cartItems');
       navigate(`/order/${data.order._id}`);
