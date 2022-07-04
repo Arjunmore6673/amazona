@@ -18,7 +18,7 @@ mongoose
     console.log('connected to mongodb');
   })
   .catch((e) => {
-    console.log('error');
+    console.log('error', e);
   });
 
 app.use('/api/seed', seedRouter);
