@@ -1,5 +1,5 @@
 import express from 'express';
-import data from './data.js';
+import path from 'path';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import seedRouter from './routes/seedRoutes.js';
@@ -26,10 +26,20 @@ app.use('/api/products', productRouter);
 app.use('/api/users', userRouter);
 app.use('/api/orders', orderRouter);
 
+const __dirname = path.resolve();
+// below line servers static images and content of frontend folder it wil run on this backend port.
+app.use(express.static(path.join(__dirname, '/frontend/build')));
+
+// everything after this 'server ready http://localhost:' + PORT
+// will server by html file
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '/frontend/build/index.html'));
+});
+
 app.use((err, req, res, next) => {
   console.log(err.message);
   res.status(500).send({ message: err.message });
 });
 
 const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => console.log('server ready http://localhost:' + PORT));
+app.listen(PORT, () => console.log(`serve at http://localhost:${PORT}`));
